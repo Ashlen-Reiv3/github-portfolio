@@ -2480,7 +2480,7 @@ input, select, textarea {
 
 			#headerToggle {
 				-moz-backface-visibility: hidden;
-				-webkit-backface-visibility: hidden;
+				-webkit-backface-visibility: hidden
 				-ms-backface-visibility: hidden;
 				backface-visibility: hidden;
 				-moz-transition: -moz-transform 0.5s ease;
@@ -2650,6 +2650,7 @@ input, select, textarea {
 #wrapper {
     width: 100%;
     margin: 0 ; /* This will center the wrapper */
+	max-width: 1545px; /* You can adjust this as per your design requirement */
 	padding: 5px 5;
 	margin-bottom: 0px; /* Adjust the value as needed */
 }
