@@ -2650,7 +2650,7 @@ input, select, textarea {
 #wrapper {
     width: 100%;
     margin: 0 ; /* This will center the wrapper */
-	max-width: 3840px; /* You can adjust this as per your design requirement */
+	max-width: 1545px; /* You can adjust this as per your design requirement */
 	padding: 5px 5;
 	margin-bottom: 0px; /* Adjust the value as needed */
 }
