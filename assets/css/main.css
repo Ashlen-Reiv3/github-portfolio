@@ -2295,7 +2295,7 @@ input, select, textarea {
 		/* Footer */
 
 			#footer {
-				margin-left: 300px;
+				margin-left: 0px;
 			}
 
 		/* Main */
@@ -2606,7 +2606,7 @@ input, select, textarea {
 			}
 
 			.container {
-				padding: 25px 15px 100px 15px;
+				padding: 25px 15px 250px 15px;
 			}
 
 		/* List */
