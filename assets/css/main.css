@@ -2649,7 +2649,7 @@ input, select, textarea {
 /* Global styles */
 #wrapper {
     width: 100%;
-    max-width: 3840px; /* You can adjust this as per your design requirement */
+    max-width: 1400px; /* You can adjust this as per your design requirement */
     margin: 0 ; /* This will center the wrapper */
 	padding: 5px 5;
 	margin-bottom: 0px; /* Adjust the value as needed */
