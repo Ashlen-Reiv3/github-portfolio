@@ -214,9 +214,9 @@ input, select, textarea {
 
 	.container {
 		margin: 0 auto;
-		height: 50vh;
+		height: 60vh;
 		max-width: 100%;
-		padding: 10px 200px 100px 200px;
+		padding: 10px 200px 10px 200px;
 	}
 
 		@media screen and (min-width: 961px) and (max-width: 1880px) {
@@ -2682,7 +2682,7 @@ input, select, textarea {
     display: flex;
     align-items: center;
     justify-content: space-between;
-	padding: 10px 50px 200px 50px;
+	padding: 10px 50px 100px 50px;
 	 border-bottom: 1px solid #ddd; /* A slight separator, you can remove if not needed */
 }
 
