@@ -2682,7 +2682,7 @@ input, select, textarea {
     display: flex;
     align-items: center;
     justify-content: space-between;
-	padding: 10px 50px 100px 50px;
+	padding: 10px 50px 50px 50px;
 	 border-bottom: 1px solid #ddd; /* A slight separator, you can remove if not needed */
 }
 
