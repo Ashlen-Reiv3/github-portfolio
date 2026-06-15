@@ -115,7 +115,7 @@ const pipeline = ['Source', 'SQL / engineer', 'Analyse', 'Visualise'];
         <h2>Hi, I'm Ashlen.</h2>
         <p class="muted">I'm a data professional focused on analytics and business intelligence — turning data into decisions across the whole pipeline, from sourcing and SQL to analysis and visualisation. I'm especially drawn to the intersection of data, sustainability, and fintech.</p>
       </div>
-      <div class="about-photo" aria-hidden="true"><span>AM</span></div>
+      <img class="about-photo" src="/ashlen.jpg" alt="Ashlen Mammen" width="640" height="640" loading="lazy" />
     </div>
   </section>
 
@@ -171,7 +171,7 @@ const pipeline = ['Source', 'SQL / engineer', 'Analyse', 'Visualise'];
   .skill-h { font-size: var(--step-0); margin-bottom: var(--sp-2); }
 
   .about { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--sp-5); align-items: center; }
-  .about-photo { aspect-ratio: 1; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; color: #fff; font-size: var(--step-3); font-weight: 700; }
+  .about-photo { aspect-ratio: 1; width: 100%; object-fit: cover; border-radius: var(--radius-lg); border: 1px solid var(--border); }
   @media (max-width: 720px) { .about { grid-template-columns: 1fr; } .about-photo { max-width: 220px; } }
 
   .cred-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
