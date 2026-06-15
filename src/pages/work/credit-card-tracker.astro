@@ -1,0 +1,40 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import SpendChart from '../../components/charts/SpendChart.jsx';
+---
+
+<CaseStudy
+  title="Credit-card spend tracker"
+  category="Data engineering · Analysis · Visualisation"
+  status="Anonymised"
+  summary="An end-to-end pipeline that turns raw multi-bank card statements into an interactive spending dashboard — sourcing, SQL modelling, analysis and visualisation."
+  role="Sole builder"
+  year="2026"
+  stack={['Python', 'SQLite', 'SQL', 'Chart.js', 'Gmail API']}
+>
+  <p class="note">Built originally on my own family's finances; every figure here is <strong>synthetic</strong>. No real account numbers, balances, merchants or personal data appear — this shows the method and the dashboard, never the statements.</p>
+
+  <section class="stage" id="source">
+    <h2>1 · Source</h2>
+    <p>Statements arrive by email from several banks. A small Python ingester (Gmail API) pulls the monthly attachments automatically into a raw store — no manual downloading, and a repeatable, auditable intake.</p>
+  </section>
+
+  <section class="stage" id="engineer">
+    <h2>2 · Engineer (SQL)</h2>
+    <p>Transactions are parsed and normalised into a SQLite <strong>single source of truth</strong> — a typed schema for cards, statements and transactions (date, merchant, category, direction, local + foreign amount and currency). An idempotent sync step rebuilds the dashboard data from the database, so a re-run with no changes is a no-op.</p>
+  </section>
+
+  <section class="stage" id="analyse">
+    <h2>3 · Analyse</h2>
+    <p>With clean data, the questions are easy: where the money goes by category and month, how spend compares to repayments, and which months break trend. Roughly 750 transactions across two cards, multi-currency, were categorised and rolled up.</p>
+  </section>
+
+  <section class="stage" id="visualise">
+    <h2>4 · Visualise</h2>
+    <figure class="viz">
+      <SpendChart client:visible />
+      <figcaption>Monthly spend by category — synthetic sample. Toggle a category to focus it.</figcaption>
+    </figure>
+    <p>The real dashboard is a themed Chart.js front-end with a documented v1 → v2 redesign that added a unified design system, WCAG-AA contrast, tabular numerals, focus-visible states and reduced-motion support.</p>
+  </section>
+</CaseStudy>

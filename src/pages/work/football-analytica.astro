@@ -1,0 +1,42 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import XgChart from '../../components/charts/XgChart.jsx';
+---
+
+<CaseStudy
+  title="Football Analytica"
+  category="Data engineering · Analysis · Visualisation"
+  status="In development"
+  summary="A Premier League results and analytics platform — open data sourced and modelled in a SQL star-schema, served through a secured API, and visualised in a modern web app."
+  role="Sole architect, engineer & analyst"
+  year="In active development (2026)"
+  stack={['Python', 'PostgreSQL', 'Supabase', 'DuckDB', 'Prefect', 'FastAPI', 'Next.js', 'Recharts', 'GitHub Actions']}
+>
+  <p class="note">A personal, non-commercial project under my aspirational data brand, <strong>Analytica</strong>. Built free-first on open data, modelled on Opta Analyst.</p>
+
+  <section class="stage" id="source">
+    <h2>1 · Source</h2>
+    <p>Match results, expected-goals (xG) and ratings come from open, licence-aware sources — football-data.co.uk (results/odds), Understat (primary xG), StatsBomb Open Data (events) and Club Elo. Ingestion runs on a schedule via Prefect and GitHub Actions, with validators guarding schema and types before load.</p>
+    <p>Real-world wrinkle: when Opta terminated FBref's advanced feed, I moved xG sourcing to Understat and demoted FBref to best-effort — sourcing driven by reliability, not convenience.</p>
+  </section>
+
+  <section class="stage" id="engineer">
+    <h2>2 · Engineer (SQL)</h2>
+    <p>Data lands in a PostgreSQL (Supabase) <strong>star-schema</strong>: dimension tables for competitions, seasons, teams and players, and fact tables for matches, player-match stats and Elo ratings. Analytical SQL <strong>views</strong> express the metrics — standings, team form, top scorers, xG comparison and head-to-head — so the API never touches raw tables.</p>
+    <p>Security is built in: Row-Level Security on every base table, a read-only API role, and views set <code>SECURITY DEFINER</code> as the only gateway. DuckDB handles fast local analytics during development.</p>
+  </section>
+
+  <section class="stage" id="analyse">
+    <h2>3 · Analyse</h2>
+    <p>From those views come the questions fans actually ask: who is over- or under-performing their xG, which teams are in form, how head-to-heads trend, and where Elo disagrees with the table. The chart below compares expected vs actual goals — overperformers beat their xG.</p>
+  </section>
+
+  <section class="stage" id="visualise">
+    <h2>4 · Visualise</h2>
+    <figure class="viz">
+      <XgChart client:visible />
+      <figcaption>Expected goals (xG) vs actual goals — illustrative sample. Hover a team for detail; switch seasons to update.</figcaption>
+    </figure>
+    <p>The live product is a Next.js + React app (Tailwind, Recharts/D3) with standings, team pages and xG visuals, plus Streamlit dashboards — deployed on Vercel, with API-key auth, rate limiting and CI/CD via GitHub Actions.</p>
+  </section>
+</CaseStudy>

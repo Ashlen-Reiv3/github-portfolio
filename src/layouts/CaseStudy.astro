@@ -1,0 +1,70 @@
+---
+import Base from './Base.astro';
+
+interface Props {
+  title: string;
+  summary: string;
+  category: string;
+  status?: string;
+  role?: string;
+  year?: string;
+  stack?: string[];
+  links?: { label: string; href: string }[];
+}
+const { title, summary, category, status, role, year, stack = [], links = [] } = Astro.props;
+const stages = ['Source', 'Engineer', 'Analyse', 'Visualise'];
+---
+
+<Base title={`${title} — Ashlen Mammen`} description={summary}>
+  <article class="cs">
+    <div class="container cs-head">
+      <a class="back" href="/#work">← All work</a>
+      <p class="eyebrow">{category}</p>
+      <div class="cs-title">
+        <h1>{title}</h1>
+        {status && <span class="badge">{status}</span>}
+      </div>
+      <p class="lead">{summary}</p>
+      <dl class="cs-meta">
+        {role && (<div><dt>Role</dt><dd>{role}</dd></div>)}
+        {year && (<div><dt>Status</dt><dd>{year}</dd></div>)}
+        {stack.length > 0 && (
+          <div class="cs-stack"><dt>Stack</dt><dd><ul class="tags">{stack.map((s) => <li class="tag">{s}</li>)}</ul></dd></div>
+        )}
+      </dl>
+      {links.length > 0 && (
+        <div class="cs-links">{links.map((l) => <a class="btn" href={l.href} target="_blank" rel="noopener">{l.label} ↗</a>)}</div>
+      )}
+      <ol class="cs-pipeline" aria-label="Pipeline stages">
+        {stages.map((s, i) => <li><span class="pl-step">{i + 1}</span>{s}</li>)}
+      </ol>
+    </div>
+    <div class="container cs-body">
+      <slot />
+    </div>
+  </article>
+</Base>
+
+<style>
+  .cs-head { padding-block: var(--sp-6) var(--sp-4); }
+  .back { display: inline-block; color: var(--muted); text-decoration: none; margin-bottom: var(--sp-4); }
+  .back:hover { color: var(--text); }
+  .cs-title { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-block: var(--sp-2); }
+  .cs-meta { display: flex; flex-wrap: wrap; gap: var(--sp-5); margin-block: var(--sp-4); }
+  .cs-meta dt { font-size: var(--step--1); color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .cs-meta dd { font-weight: 500; }
+  .cs-stack .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+  .cs-links { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-5); }
+  .cs-pipeline { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: var(--sp-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+  .cs-pipeline li { display: inline-flex; align-items: center; gap: 8px; font-size: var(--step--1); color: var(--muted); }
+  .cs-pipeline li:not(:last-child)::after { content: '→'; margin-left: var(--sp-2); color: var(--faint); }
+  .cs-body { max-width: 75ch; padding-block: var(--sp-5) var(--sp-6); }
+  .cs-body :global(h2) { margin-top: var(--sp-6); margin-bottom: var(--sp-2); font-size: var(--step-1); }
+  .cs-body :global(p) { color: var(--muted); margin-bottom: var(--sp-3); }
+  .cs-body :global(.stage) { scroll-margin-top: 80px; }
+  .cs-body :global(.viz) { margin-block: var(--sp-4); padding: var(--sp-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+  .cs-body :global(figure) { margin: 0; }
+  .cs-body :global(figcaption) { font-size: var(--step--1); color: var(--faint); margin-top: var(--sp-2); }
+  .cs-body :global(.note) { border-left: 3px solid var(--accent); background: var(--surface); padding: var(--sp-3); border-radius: 0 var(--radius) var(--radius) 0; color: var(--muted); }
+  .cs-body :global(.note strong) { color: var(--text); }
+</style>

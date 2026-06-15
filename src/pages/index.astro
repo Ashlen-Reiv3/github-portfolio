@@ -1,0 +1,196 @@
+---
+import Base from '../layouts/Base.astro';
+
+const proof = ['Kaggle', 'DataCamp', 'LeetCode'];
+
+const projects = [
+  { title: 'Football Analytica', cat: 'data-eng analysis viz', tags: ['Postgres', 'FastAPI', 'Next.js', 'Recharts'], href: '/work/football-analytica', badge: 'In development', blurb: 'Premier League analytics platform — open data sourced, modelled, and visualised end to end.' },
+  { title: 'Credit-card spend tracker', cat: 'data-eng analysis viz', tags: ['Python', 'SQL', 'Chart.js'], href: '/work/credit-card-tracker', badge: 'Anonymised', blurb: 'Bank statements to an interactive spending dashboard — the full pipeline.' },
+  { title: 'Titanic — exploratory analysis', cat: 'analysis', tags: ['Python', 'pandas'], href: 'https://www.kaggle.com/code/ashlenmammen/titanic-dataset-eda', external: true, blurb: 'EDA notebook on the classic Kaggle dataset.' },
+  { title: 'Titanic — ML model', cat: 'data-science', tags: ['scikit-learn'], href: 'https://www.kaggle.com/code/ashlenmammen/titanic-dataset-ml', external: true, blurb: 'Survival prediction with scikit-learn.' },
+  { title: 'LeetCode Top 50 SQL', cat: 'data-eng', tags: ['SQL'], href: 'https://leetcode.com/ashlenmammen/', external: true, blurb: 'Query practice — joins, window functions, aggregation.' },
+];
+
+const filters = [
+  { id: 'all', label: 'All' },
+  { id: 'data-eng', label: 'Data engineering' },
+  { id: 'analysis', label: 'Analysis' },
+  { id: 'data-science', label: 'Data science' },
+  { id: 'viz', label: 'Visualisation' },
+];
+
+const skills = [
+  { group: 'Engineering & SQL', items: ['SQL', 'PostgreSQL', 'SQLite', 'ETL', 'Star schema', 'Supabase'] },
+  { group: 'Analysis & ML', items: ['Python', 'pandas', 'scikit-learn', 'TensorFlow'] },
+  { group: 'Visualisation & BI', items: ['Recharts', 'D3', 'Chart.js', 'Tableau', 'Power BI'] },
+  { group: 'Tools & platforms', items: ['FastAPI', 'Next.js', 'Docker', 'Git', 'Kaggle', 'LeetCode'] },
+];
+
+const certs = [
+  { label: 'DataCamp — Data Analyst', href: 'https://www.datacamp.com/certificate/DA0027776666312' },
+  { label: 'DataCamp — Data Scientist', href: 'https://www.datacamp.com/certificate/DS0026926179575' },
+  { label: 'DataCamp — Data Engineer', href: 'https://www.datacamp.com/certificate/DE0018295930098' },
+  { label: 'Kaggle profile', href: 'https://www.kaggle.com/ashlenmammen/Home' },
+  { label: 'LeetCode profile', href: 'https://leetcode.com/ashlenmammen/' },
+];
+
+const pipeline = ['Source', 'SQL / engineer', 'Analyse', 'Visualise'];
+---
+
+<Base>
+  <section class="section hero">
+    <div class="container">
+      <p class="eyebrow">Data analyst</p>
+      <h1>Making sense of the world,<br />one dataset at a time.</h1>
+      <p class="lead hero-lead">I turn messy data into clear decisions — analytics, data engineering, and visualisation, with a soft spot for sustainability and fintech.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="#work">View work</a>
+        <a class="btn" href="/cv.pdf">Download CV</a>
+      </div>
+      <ul class="proof" aria-label="Profiles">
+        {proof.map((p) => <li class="tag">{p}</li>)}
+      </ul>
+    </div>
+  </section>
+
+  <section class="section featured-wrap">
+    <div class="container">
+      <article class="featured card">
+        <span class="badge">★ Featured · In development</span>
+        <h2>Football Analytica</h2>
+        <p class="muted">A Premier League analytics platform — open data sourced and modelled in a SQL star-schema, served through an API, and visualised in a modern web app. One project, the full pipeline.</p>
+        <ul class="pipeline" aria-label="Pipeline stages">
+          {pipeline.map((s, i) => (
+            <li><span class="pl-step">{i + 1}</span>{s}</li>
+          ))}
+        </ul>
+        <a class="btn btn-primary" href="/work/football-analytica">Read the case study</a>
+      </article>
+    </div>
+  </section>
+
+  <section id="work" class="section">
+    <div class="container">
+      <div class="section-head">
+        <div><p class="eyebrow">Work</p><h2>Selected projects</h2></div>
+        <div class="filters" role="group" aria-label="Filter projects">
+          {filters.map((f, i) => (
+            <button class="filter" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'}>{f.label}</button>
+          ))}
+        </div>
+      </div>
+      <div class="grid work-grid">
+        {projects.map((p) => (
+          <a class="card project" data-cat={p.cat} href={p.href} {...(p.external ? { target: '_blank', rel: 'noopener' } : {})}>
+            <div class="project-top">
+              <h3>{p.title}</h3>
+              {p.badge && <span class="badge">{p.badge}</span>}
+            </div>
+            <p class="muted">{p.blurb}</p>
+            <ul class="tags">{p.tags.map((t) => <li class="tag">{t}</li>)}</ul>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section surface-section">
+    <div class="container">
+      <div class="section-head"><div><p class="eyebrow">Skills</p><h2>What I work with</h2></div></div>
+      <div class="grid skills-grid">
+        {skills.map((s) => (
+          <div class="card">
+            <h3 class="skill-h">{s.group}</h3>
+            <ul class="tags">{s.items.map((i) => <li class="tag">{i}</li>)}</ul>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section id="about" class="section">
+    <div class="container about">
+      <div>
+        <p class="eyebrow">About</p>
+        <h2>Hi, I'm Ashlen.</h2>
+        <p class="muted">I'm a data professional focused on analytics and business intelligence — turning data into decisions across the whole pipeline, from sourcing and SQL to analysis and visualisation. I'm especially drawn to the intersection of data, sustainability, and fintech.</p>
+      </div>
+      <div class="about-photo" aria-hidden="true"><span>AM</span></div>
+    </div>
+  </section>
+
+  <section class="section surface-section">
+    <div class="container">
+      <div class="section-head"><div><p class="eyebrow">Credentials</p><h2>Certifications & profiles</h2></div></div>
+      <ul class="grid cred-grid">
+        {certs.map((c) => (
+          <li><a class="card cred" href={c.href} target="_blank" rel="noopener">{c.label}<span aria-hidden="true">↗</span></a></li>
+        ))}
+      </ul>
+    </div>
+  </section>
+
+  <section id="contact" class="section">
+    <div class="container contact">
+      <p class="eyebrow">Contact</p>
+      <h2>Let's talk data.</h2>
+      <p class="lead">Open to data analyst, BI, and data engineering roles and collaborations.</p>
+      <div class="hero-cta">
+        <a class="btn btn-primary" href="mailto:ashlenmammen+portfolio@gmail.com">Email me</a>
+        <a class="btn" href="https://www.linkedin.com/in/ashlen-mammen-074903141/" target="_blank" rel="noopener">LinkedIn</a>
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .hero { padding-block: var(--sp-7) var(--sp-6); }
+  .hero h1 { margin-block: var(--sp-2) var(--sp-3); }
+  .hero-lead { max-width: 60ch; }
+  .hero-cta { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-4); }
+  .proof { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-5); }
+
+  .featured { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); border-color: var(--border-strong); }
+  .featured h2 { margin-top: var(--sp-1); }
+  .pipeline { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-block: var(--sp-2) var(--sp-3); }
+  .pipeline li { display: inline-flex; align-items: center; gap: 8px; font-size: var(--step--1); color: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 5px 12px; }
+  .pl-step { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--accent-contrast); font-size: 11px; font-weight: 700; }
+
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter { font: inherit; font-size: var(--step--1); padding: 6px 12px; border-radius: var(--radius-pill); border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; }
+  .filter[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
+
+  .work-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
+  .project { text-decoration: none; display: flex; flex-direction: column; gap: var(--sp-2); }
+  .project-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-2); }
+  .project h3 { font-size: var(--step-0); }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: var(--sp-1); }
+
+  .surface-section { background: var(--surface); border-block: 1px solid var(--border); }
+  .skills-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .skill-h { font-size: var(--step-0); margin-bottom: var(--sp-2); }
+
+  .about { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--sp-5); align-items: center; }
+  .about-photo { aspect-ratio: 1; border-radius: var(--radius-lg); background: linear-gradient(135deg, var(--accent), var(--accent-2)); display: grid; place-items: center; color: #fff; font-size: var(--step-3); font-weight: 700; }
+  @media (max-width: 720px) { .about { grid-template-columns: 1fr; } .about-photo { max-width: 220px; } }
+
+  .cred-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+  .cred { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); text-decoration: none; }
+  .contact { text-align: center; max-width: 60ch; margin-inline: auto; }
+  .contact .hero-cta { justify-content: center; }
+</style>
+
+<script>
+  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
+  const cards = document.querySelectorAll<HTMLElement>('.project');
+  buttons.forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const f = btn.getAttribute('data-filter');
+      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      cards.forEach((c) => {
+        const cats = (c.getAttribute('data-cat') || '').split(' ');
+        c.hidden = f === 'all' || cats.includes(f as string) ? false : true;
+      });
+    });
+  });
+</script>

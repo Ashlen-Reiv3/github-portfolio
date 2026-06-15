@@ -1,0 +1,27 @@
+---
+const year = new Date().getFullYear();
+const socials = [
+  { href: 'https://www.linkedin.com/in/ashlen-mammen-074903141/', label: 'LinkedIn' },
+  { href: 'https://github.com/Ashlen-Reiv3', label: 'GitHub' },
+  { href: 'mailto:ashlenmammen+portfolio@gmail.com', label: 'Email' },
+];
+---
+
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <p class="muted">© {year} Ashlen Mammen. Built with Astro.</p>
+    <ul class="footer-social">
+      {socials.map((s) => (
+        <li><a href={s.href}>{s.label}</a></li>
+      ))}
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer { border-top: 1px solid var(--border); margin-top: var(--sp-7); }
+  .footer-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); padding-block: var(--sp-5); flex-wrap: wrap; }
+  .footer-social { display: flex; gap: var(--sp-4); }
+  .footer-social a { color: var(--muted); text-decoration: none; }
+  .footer-social a:hover { color: var(--text); }
+</style>
