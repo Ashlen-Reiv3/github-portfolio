@@ -1,5 +1,7 @@
 ---
 import Base from './Base.astro';
+import StatCard from '../components/StatCard.astro';
+import { withBase } from '../lib/url';
 
 interface Props {
   title: string;
@@ -10,61 +12,148 @@ interface Props {
   year?: string;
   stack?: string[];
   links?: { label: string; href: string }[];
+  problem?: string;
+  heroStat?: { value: string; unit?: string; label: string; spark?: number[]; lineage?: string[]; tone?: 'teal' | 'signal' };
+  ogSlug?: string;
 }
-const { title, summary, category, status, role, year, stack = [], links = [] } = Astro.props;
-const stages = ['Source', 'Engineer', 'Analyse', 'Visualise'];
+const { title, summary, category, status, role, year, stack = [], links = [], problem, heroStat, ogSlug } = Astro.props;
+const creativeWork = {
+  '@context': 'https://schema.org',
+  '@type': 'CreativeWork',
+  name: title,
+  abstract: summary,
+  about: category,
+  author: { '@type': 'Person', name: 'Ashlen Mammen' },
+  keywords: stack.join(', '),
+};
+const stages = [
+  { id: 'source', label: 'Source' },
+  { id: 'engineer', label: 'SQL' },
+  { id: 'analyse', label: 'Analysis' },
+  { id: 'visualise', label: 'Viz' },
+];
 ---
 
-<Base title={`${title} — Ashlen Mammen`} description={summary}>
+<Base title={`${title} · Ashlen Mammen`} description={summary} ogSlug={ogSlug} schema={creativeWork}>
   <article class="cs">
-    <div class="container cs-head">
-      <a class="back" href="/#work">← All work</a>
-      <p class="eyebrow">{category}</p>
+    <div class="container cs-head graph-grid">
+      <a class="back" href={withBase('/#work')}>← All work</a>
+      <p class="eyebrow"><span class="num">›</span> {category}</p>
       <div class="cs-title">
         <h1>{title}</h1>
         {status && <span class="badge">{status}</span>}
       </div>
-      <p class="lead">{summary}</p>
-      <dl class="cs-meta">
-        {role && (<div><dt>Role</dt><dd>{role}</dd></div>)}
-        {year && (<div><dt>Status</dt><dd>{year}</dd></div>)}
-        {stack.length > 0 && (
-          <div class="cs-stack"><dt>Stack</dt><dd><ul class="tags">{stack.map((s) => <li class="tag">{s}</li>)}</ul></dd></div>
-        )}
-      </dl>
+      <p class="lead cs-summary">{summary}</p>
+      <div class="cs-headgrid">
+        <dl class="cs-meta">
+          {role && (<div><dt>Role</dt><dd>{role}</dd></div>)}
+          {year && (<div><dt>Status</dt><dd>{year}</dd></div>)}
+          {stack.length > 0 && (
+            <div class="cs-stack"><dt>Stack</dt><dd><ul class="tags">{stack.map((s) => <li class="tag">{s}</li>)}</ul></dd></div>
+          )}
+        </dl>
+        {heroStat && <StatCard class="cs-stat" {...heroStat} />}
+      </div>
       {links.length > 0 && (
         <div class="cs-links">{links.map((l) => <a class="btn" href={l.href} target="_blank" rel="noopener">{l.label} ↗</a>)}</div>
       )}
-      <ol class="cs-pipeline" aria-label="Pipeline stages">
-        {stages.map((s, i) => <li><span class="pl-step">{i + 1}</span>{s}</li>)}
-      </ol>
     </div>
-    <div class="container cs-body">
-      <slot />
+
+    <div class="container cs-grid">
+      <aside class="cs-rail" aria-label="Pipeline">
+        <p class="rail-label">Pipeline</p>
+        <ol class="rail-list">
+          {stages.map((s, i) => (
+            <li><a class="rail-item" data-stage={s.id} href={`#${s.id}`}><span class="rail-num">{i + 1}</span>{s.label}</a></li>
+          ))}
+        </ol>
+      </aside>
+
+      <div class="cs-content">
+        {problem && (
+          <div class="cs-problem">
+            <p class="cs-problem-key">The problem</p>
+            <p>{problem}</p>
+          </div>
+        )}
+        <slot />
+      </div>
     </div>
   </article>
 </Base>
 
 <style>
-  .cs-head { padding-block: var(--sp-6) var(--sp-4); }
-  .back { display: inline-block; color: var(--muted); text-decoration: none; margin-bottom: var(--sp-4); }
-  .back:hover { color: var(--text); }
+  .cs-head { --grid-size: 28px; padding-block: var(--sp-6) var(--sp-5); border-bottom: 1px solid var(--border); }
+  .back { display: inline-block; font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); text-decoration: none; margin-bottom: var(--sp-4); }
+  .back:hover { color: var(--accent); }
   .cs-title { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-block: var(--sp-2); }
-  .cs-meta { display: flex; flex-wrap: wrap; gap: var(--sp-5); margin-block: var(--sp-4); }
-  .cs-meta dt { font-size: var(--step--1); color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
+  .cs-summary { max-width: var(--measure); margin-top: var(--sp-2); }
+  .cs-headgrid { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--sp-5); flex-wrap: wrap; margin-top: var(--sp-4); }
+  .cs-meta { display: flex; flex-wrap: wrap; gap: var(--sp-5); }
+  .cs-meta dt { font-family: var(--font-mono); font-size: 10.5px; color: var(--faint); text-transform: uppercase; letter-spacing: .08em; margin-bottom: 4px; }
   .cs-meta dd { font-weight: 500; }
   .cs-stack .tags { display: flex; gap: 6px; flex-wrap: wrap; }
-  .cs-links { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-bottom: var(--sp-5); }
-  .cs-pipeline { display: flex; flex-wrap: wrap; gap: var(--sp-2); padding: var(--sp-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
-  .cs-pipeline li { display: inline-flex; align-items: center; gap: 8px; font-size: var(--step--1); color: var(--muted); }
-  .cs-pipeline li:not(:last-child)::after { content: '→'; margin-left: var(--sp-2); color: var(--faint); }
-  .cs-body { max-width: 75ch; padding-block: var(--sp-5) var(--sp-6); }
-  .cs-body :global(h2) { margin-top: var(--sp-6); margin-bottom: var(--sp-2); font-size: var(--step-1); }
-  .cs-body :global(p) { color: var(--muted); margin-bottom: var(--sp-3); }
-  .cs-body :global(.stage) { scroll-margin-top: 80px; }
-  .cs-body :global(.viz) { margin-block: var(--sp-4); padding: var(--sp-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); }
-  .cs-body :global(figure) { margin: 0; }
-  .cs-body :global(figcaption) { font-size: var(--step--1); color: var(--faint); margin-top: var(--sp-2); }
-  .cs-body :global(.note) { border-left: 3px solid var(--accent); background: var(--surface); padding: var(--sp-3); border-radius: 0 var(--radius) var(--radius) 0; color: var(--muted); }
-  .cs-body :global(.note strong) { color: var(--text); }
+  .cs-stat { display: flex; }
+  .cs-links { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-4); }
+
+  /* spine layout: sticky rail + content */
+  .cs-grid { display: grid; grid-template-columns: 160px minmax(0, 1fr); gap: var(--sp-6); padding-block: var(--sp-6); align-items: start; }
+  .cs-rail { position: sticky; top: 80px; align-self: start; }
+  .rail-label { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .12em; text-transform: uppercase; color: var(--faint); margin-bottom: var(--sp-3); }
+  .rail-list { display: flex; flex-direction: column; gap: 2px; border-left: 2px solid var(--border); }
+  .rail-item { display: flex; align-items: center; gap: 10px; padding: 8px 12px; margin-left: -2px; border-left: 2px solid transparent; font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); text-decoration: none; transition: color .15s ease, border-color .15s ease; }
+  .rail-num { display: inline-grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; border: 1px solid var(--border-strong); font-size: 10px; }
+  .rail-item:hover { color: var(--accent); }
+  .rail-item.active { color: var(--accent); border-left-color: var(--accent); }
+  .rail-item.active .rail-num { background: var(--accent); color: var(--accent-contrast); border-color: var(--accent); }
+
+  .cs-content { max-width: var(--measure); }
+  .cs-problem { border-left: 3px solid var(--signal); background: var(--orange-tint); padding: var(--sp-3) var(--sp-4); border-radius: 0 var(--radius) var(--radius) 0; margin-bottom: var(--sp-5); }
+  .cs-problem-key { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--orange-ink); margin-bottom: 4px; }
+  .cs-problem p:last-child { color: var(--text); }
+
+  .cs-content :global(.stage) { scroll-margin-top: 80px; padding-top: var(--sp-2); }
+  .cs-content :global(h2) { margin-top: var(--sp-6); margin-bottom: var(--sp-2); font-size: var(--step-2); }
+  .cs-content :global(.stage:first-of-type h2) { margin-top: 0; }
+  .cs-content :global(p) { color: var(--muted); margin-bottom: var(--sp-3); }
+  .cs-content :global(.viz) { margin-block: var(--sp-4); padding: var(--sp-4); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); }
+  .cs-content :global(figure) { margin: 0; }
+  .cs-content :global(figcaption) { font-size: var(--step--1); color: var(--faint); margin-top: var(--sp-2); }
+  .cs-content :global(.note) { border-left: 3px solid var(--accent); background: var(--teal-tint); padding: var(--sp-3) var(--sp-4); border-radius: 0 var(--radius) var(--radius) 0; color: var(--text); }
+  .cs-content :global(.note strong) { color: var(--text); }
+  .cs-content :global(.insight) { border-left: 3px solid var(--signal); background: var(--surface); padding: var(--sp-3) var(--sp-4); border-radius: 0 var(--radius) var(--radius) 0; }
+  .cs-content :global(.insight .k) { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--signal); display: block; margin-bottom: 4px; }
+  .cs-content :global(.insight p) { color: var(--text); font-size: var(--step-1); font-family: var(--font-display); margin: 0; }
+  .cs-content :global(pre) { background: var(--surface-2); border: 1px solid var(--border); border-radius: var(--radius); padding: var(--sp-3); overflow-x: auto; margin-bottom: var(--sp-3); }
+  .cs-content :global(pre code) { background: none; padding: 0; font-size: var(--step--1); color: var(--text); line-height: 1.7; }
+
+  @media (max-width: 860px) {
+    .cs-grid { grid-template-columns: 1fr; gap: var(--sp-4); }
+    .cs-rail { position: static; top: auto; }
+    .rail-list { flex-direction: row; flex-wrap: wrap; border-left: 0; }
+    .rail-item { margin-left: 0; border-left: 0; border-bottom: 2px solid transparent; }
+    .rail-item.active { border-left: 0; border-bottom-color: var(--accent); }
+  }
 </style>
+
+<script>
+  // Scroll-spy: highlight the pipeline stage currently in view. Rebinds across View Transitions.
+  (() => {
+    const W = window as any;
+    if (W.__railInit) return;
+    W.__railInit = true;
+    const bind = () => {
+      const items = Array.from(document.querySelectorAll<HTMLElement>('.rail-item'));
+      const stages = Array.from(document.querySelectorAll<HTMLElement>('.stage[id]'));
+      if (!items.length || !stages.length) return;
+      const setActive = (id: string) => items.forEach((it) => it.classList.toggle('active', it.dataset.stage === id));
+      const io = new IntersectionObserver((entries) => {
+        const visible = entries.filter((e) => e.isIntersecting).sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+        if (visible) setActive((visible.target as HTMLElement).id);
+      }, { rootMargin: '-20% 0px -55% 0px', threshold: [0.1, 0.5, 1] });
+      stages.forEach((s) => io.observe(s));
+      setActive(stages[0].id);
+    };
+    document.addEventListener('astro:page-load', bind);
+  })();
+</script>

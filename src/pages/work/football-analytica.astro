@@ -1,42 +1,115 @@
 ---
 import CaseStudy from '../../layouts/CaseStudy.astro';
+import ChartFigure from '../../components/ChartFigure.astro';
 import XgChart from '../../components/charts/XgChart.jsx';
+import ShotMap from '../../components/charts/ShotMap.jsx';
+
+const shotRows = [
+  ['5', 'White', '0.13', 'Missed'],
+  ['8', 'Havertz', '0.22', 'Saved'],
+  ['12', 'Martinelli', '0.18', 'Saved'],
+  ['23', 'Saka', '0.62', 'Goal'],
+  ['31', 'Saka', '0.09', 'Missed'],
+  ['35', 'Rice', '0.03', 'Missed'],
+  ['40', 'Rice', '0.07', 'Missed'],
+  ['49', 'Martinelli', '0.28', 'Saved'],
+  ['55', 'White', '0.04', 'Missed'],
+  ['58', 'Ødegaard', '0.10', 'Saved'],
+  ['62', 'Saka', '0.41', 'Saved'],
+  ['67', 'Ødegaard', '0.34', 'Goal'],
+  ['71', 'Trossard', '0.05', 'Missed'],
+  ['78', 'Jesus', '0.71', 'Goal'],
+  ['84', 'Jesus', '0.36', 'Goal'],
+  ['90', 'Trossard', '0.11', 'Saved'],
+];
+
+const xgSql = `-- v_xg_comparison: goals vs expected goals, by team & season
+CREATE VIEW v_xg_comparison AS
+SELECT  t.team_name,
+        s.season_label,
+        SUM(m.goals_for)                          AS goals,
+        ROUND(SUM(m.xg_for), 1)                   AS expected_goals,
+        ROUND(SUM(m.goals_for) - SUM(m.xg_for),1) AS goals_over_xg
+FROM    fact_team_match m
+JOIN    dim_team   t USING (team_id)
+JOIN    dim_season s USING (season_id)
+GROUP BY t.team_name, s.season_label
+ORDER BY goals_over_xg DESC;`;
+
+const xgRows = [
+  ['Arsenal', 71, 78, '+7'],
+  ['Man City', 80, 76, '−4'],
+  ['Liverpool', 74, 77, '+3'],
+  ['Spurs', 66, 63, '−3'],
+  ['Newcastle', 61, 68, '+7'],
+  ['Brighton', 58, 55, '−3'],
+];
 ---
 
 <CaseStudy
   title="Football Analytica"
   category="Data engineering · Analysis · Visualisation"
   status="In development"
-  summary="A Premier League results and analytics platform — open data sourced and modelled in a SQL star-schema, served through a secured API, and visualised in a modern web app."
+  summary="A Premier League results and analytics platform. Open data, sourced and modelled in a SQL star-schema, served through a secured API and visualised in a modern web app."
   role="Sole architect, engineer & analyst"
   year="In active development (2026)"
   stack={['Python', 'PostgreSQL', 'Supabase', 'DuckDB', 'Prefect', 'FastAPI', 'Next.js', 'Recharts', 'GitHub Actions']}
+  ogSlug="football-analytica"
+  problem="Fans and analysts argue about which teams are genuinely good versus lucky. Answering that means joining expected goals (xG) to results across seasons, and the open data is scattered across sources, formats and licences. Can one person build the whole pipeline that settles it?"
+  heroStat={{ value: '+7', label: 'Arsenal: goals over xG, 24/25', spark: [7, -4, 3, -3, 7, -3], lineage: ['source', 'SQL', 'viz'] }}
+  links={[]}
 >
   <p class="note">A personal, non-commercial project under my aspirational data brand, <strong>Analytica</strong>. Built free-first on open data, modelled on Opta Analyst.</p>
 
   <section class="stage" id="source">
-    <h2>1 · Source</h2>
-    <p>Match results, expected-goals (xG) and ratings come from open, licence-aware sources — football-data.co.uk (results/odds), Understat (primary xG), StatsBomb Open Data (events) and Club Elo. Ingestion runs on a schedule via Prefect and GitHub Actions, with validators guarding schema and types before load.</p>
-    <p>Real-world wrinkle: when Opta terminated FBref's advanced feed, I moved xG sourcing to Understat and demoted FBref to best-effort — sourcing driven by reliability, not convenience.</p>
+    <h2>Source: the data</h2>
+    <p>Match results, expected goals (xG) and ratings come from open, licence-aware sources: football-data.co.uk (results and odds), Understat (primary xG), StatsBomb Open Data (events) and Club Elo. Ingestion runs on a schedule through Prefect and GitHub Actions, with validators checking schema and types before load.</p>
+    <p>One real-world wrinkle: when Opta cut off FBref's advanced feed, I moved xG sourcing to Understat and dropped FBref to best-effort. Sourcing follows reliability, not convenience.</p>
   </section>
 
   <section class="stage" id="engineer">
-    <h2>2 · Engineer (SQL)</h2>
-    <p>Data lands in a PostgreSQL (Supabase) <strong>star-schema</strong>: dimension tables for competitions, seasons, teams and players, and fact tables for matches, player-match stats and Elo ratings. Analytical SQL <strong>views</strong> express the metrics — standings, team form, top scorers, xG comparison and head-to-head — so the API never touches raw tables.</p>
+    <h2>Engineer: the SQL model</h2>
+    <p>Data lands in a PostgreSQL (Supabase) <strong>star-schema</strong>: dimension tables for competitions, seasons, teams and players, and fact tables for matches, player-match stats and Elo ratings. Analytical SQL <strong>views</strong> express the metrics (standings, form, top scorers, xG comparison), so the API never touches raw tables.</p>
+    <pre><code>{xgSql}</code></pre>
     <p>Security is built in: Row-Level Security on every base table, a read-only API role, and views set <code>SECURITY DEFINER</code> as the only gateway. DuckDB handles fast local analytics during development.</p>
   </section>
 
   <section class="stage" id="analyse">
-    <h2>3 · Analyse</h2>
-    <p>From those views come the questions fans actually ask: who is over- or under-performing their xG, which teams are in form, how head-to-heads trend, and where Elo disagrees with the table. The chart below compares expected vs actual goals — overperformers beat their xG.</p>
+    <h2>Analyse: the question</h2>
+    <p>Those views answer the questions fans actually ask: who is over- or under-performing their xG, which teams are in form, and where Elo disagrees with the table. Ranking teams by <code>goals_over_xg</code> separates clinical finishing from luck.</p>
+    <div class="insight">
+      <span class="k">Key insight</span>
+      <p>In the 2024/25 sample, Arsenal scored 78 from 71 xG (+7), the league's biggest over-performance, while Man City under-performed their chances (76 from 80).</p>
+    </div>
   </section>
 
   <section class="stage" id="visualise">
-    <h2>4 · Visualise</h2>
-    <figure class="viz">
-      <XgChart client:visible />
-      <figcaption>Expected goals (xG) vs actual goals — illustrative sample. Hover a team for detail; switch seasons to update.</figcaption>
-    </figure>
-    <p>The live product is a Next.js + React app (Tailwind, Recharts/D3) with standings, team pages and xG visuals, plus Streamlit dashboards — deployed on Vercel, with API-key auth, rate limiting and CI/CD via GitHub Actions.</p>
+    <h2>Visualise: the answer</h2>
+    <p>The signature view is a <strong>shot map</strong>: every shot plotted where it was taken, sized by the chance it represented (xG). A season of events becomes one picture of where the danger comes from, and who finishes it.</p>
+    <div class="viz">
+      <ChartFigure
+        summary="16 shots worth 3.74 xG produced 4 goals. The danger clustered around the penalty spot, and both big chances (0.6+ xG) were buried."
+        context="One illustrative match: 16 shots, each with its own expected-goals (xG) value, in the style of Understat event data."
+        caption="Hover or keyboard-focus a shot for detail."
+        note="size = xG · teal = goal, grey = saved, hollow = missed"
+        columns={['Min', 'Player', 'xG', 'Outcome']}
+        rows={shotRows}
+      >
+        <ShotMap client:load />
+      </ChartFigure>
+    </div>
+    <div class="viz">
+      <ChartFigure
+        summary="Arsenal and Newcastle beat their expected goals by +7 in 2024/25. Man City fell short, scoring 76 from 80 xG."
+        context="Six Premier League teams, a full season of actual goals against summed expected goals (xG). Illustrative 2024/25 and 2023/24 samples."
+        caption="Switch seasons, or hover a bar for detail."
+        note="expected = hatched blue, actual = solid teal"
+        columns={['Team', 'xG', 'Goals', '+/− xG']}
+        rows={xgRows}
+      >
+        <XgChart client:load />
+      </ChartFigure>
+    </div>
+    <p><strong>Impact and artefacts:</strong> the live product is a Next.js and React app (Tailwind, Recharts/D3) with standings, team pages and xG visuals, plus Streamlit dashboards. It's deployed on Vercel with API-key auth, rate limiting and CI/CD through GitHub Actions.</p>
   </section>
 </CaseStudy>

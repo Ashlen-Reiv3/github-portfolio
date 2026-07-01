@@ -1,0 +1,61 @@
+---
+// Accessible chart wrapper: takeaway summary + chart slot + collapsible data
+// table + a note on non-colour encoding. Every chart should use this.
+interface Props {
+  summary: string;
+  context?: string;
+  caption?: string;
+  columns?: string[];
+  rows?: (string | number)[][];
+  note?: string;
+}
+const { summary, context, caption, columns = [], rows = [], note } = Astro.props;
+---
+
+<figure class="chart-figure figure">
+  <p class="cf-takeaway"><span class="cf-key">Takeaway</span>{summary}</p>
+  {context && <p class="cf-context"><span class="cf-key cf-key-plain">The data</span>{context}</p>}
+  <div class="cf-area"><slot /></div>
+  {caption && <figcaption class="cf-cap muted">{caption}</figcaption>}
+  {rows.length > 0 && (
+    <details class="cf-data">
+      <summary>Show data table{note ? ` · ${note}` : ''}</summary>
+      <div class="cf-tablewrap">
+        <table>
+          <thead><tr>{columns.map((c) => <th scope="col">{c}</th>)}</tr></thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr>{r.map((cell, i) => (i === 0 ? <th scope="row">{cell}</th> : <td>{cell}</td>))}</tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </details>
+  )}
+</figure>
+
+<style>
+  .chart-figure { margin: 0; }
+  .cf-takeaway {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+    font-size: var(--step-0); color: var(--text); line-height: 1.5;
+    border-left: 3px solid var(--accent); background: var(--teal-tint);
+    padding: var(--sp-2) var(--sp-3); border-radius: 0 var(--radius) var(--radius) 0;
+    margin-bottom: var(--sp-3);
+  }
+  .cf-key { font-family: var(--font-mono); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--teal-ink); }
+  .cf-context {
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px;
+    font-size: var(--step--1); color: var(--muted); line-height: 1.5; margin-bottom: var(--sp-3);
+  }
+  .cf-key-plain { color: var(--faint); }
+  .cf-cap { font-size: var(--step--1); margin-top: var(--sp-2); }
+  .cf-data { margin-top: var(--sp-3); }
+  .cf-data summary { font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); cursor: pointer; }
+  .cf-data summary:hover { color: var(--accent); }
+  .cf-tablewrap { overflow-x: auto; margin-top: var(--sp-2); }
+  table { width: 100%; border-collapse: collapse; font-size: var(--step--1); }
+  th, td { text-align: right; padding: 6px 10px; border-bottom: 1px solid var(--border); }
+  thead th { color: var(--faint); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; font-size: 10.5px; }
+  tbody th[scope='row'] { text-align: left; font-weight: 500; color: var(--text); }
+</style>

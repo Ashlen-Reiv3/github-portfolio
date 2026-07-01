@@ -1,20 +1,19 @@
 ---
+import { withBase } from '../lib/url';
 const links = [
-  { href: '/#work', label: 'Work' },
-  { href: '/#about', label: 'About' },
-  { href: '/#contact', label: 'Contact' },
+  { href: withBase('/#work'), label: 'Work' },
+  { href: withBase('/#contact'), label: 'Contact' },
 ];
 ---
 
-<header class="site-header">
+<header class="site-header" transition:persist>
   <div class="container nav-inner">
-    <a class="brand" href="/">
-      <span class="brand-mark" aria-hidden="true">a</span>
+    <a class="brand" href={withBase('/')}>
+      <span class="brand-mark" aria-hidden="true">A</span>
       <span class="brand-name">Ashlen Mammen</span>
     </a>
     <nav class="nav-links" aria-label="Primary">
       {links.map((l) => <a href={l.href}>{l.label}</a>)}
-      <a class="btn btn-primary nav-cv" href="/cv.pdf">CV</a>
       <button id="theme-toggle" class="icon-btn" type="button" aria-label="Toggle dark mode" aria-pressed="false">
         <span class="theme-ico" aria-hidden="true"></span>
       </button>
@@ -25,32 +24,23 @@ const links = [
 <style>
   .site-header {
     position: sticky; top: 0; z-index: 50;
-    background: color-mix(in srgb, var(--bg) 86%, transparent);
-    backdrop-filter: blur(10px);
+    background: color-mix(in srgb, var(--bg) 82%, transparent);
+    backdrop-filter: saturate(140%) blur(10px);
     border-bottom: 1px solid var(--border);
   }
   .nav-inner { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-3); padding-block: 0.7rem; }
-  .brand { display: inline-flex; align-items: center; gap: 10px; font-weight: 600; text-decoration: none; letter-spacing: -0.02em; }
-  .brand-mark { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; background: var(--accent); color: var(--accent-contrast); font-weight: 700; }
+  .brand { display: inline-flex; align-items: center; gap: 10px; text-decoration: none; }
+  .brand-mark {
+    display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px;
+    background: var(--accent); color: var(--accent-contrast);
+    font-family: var(--font-display); font-weight: 600; font-size: 17px;
+  }
+  .brand-name { font-family: var(--font-display); font-weight: 600; font-size: var(--step-0); letter-spacing: -0.01em; }
   .nav-links { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; }
-  .nav-links > a { text-decoration: none; color: var(--muted); font-weight: 500; }
-  .nav-links > a:hover { color: var(--text); }
-  .nav-cv { color: var(--accent-contrast) !important; }
-  .icon-btn { width: 38px; height: 38px; display: grid; place-items: center; border-radius: var(--radius); border: 1px solid var(--border-strong); background: transparent; cursor: pointer; color: var(--text); }
-  .icon-btn:hover { background: var(--surface); }
+  .nav-links > a { text-decoration: none; color: var(--muted); font-weight: 500; font-size: var(--step--1); transition: color .15s ease; }
+  .nav-links > a:hover { color: var(--accent); }
+  .icon-btn { width: 38px; height: 38px; display: grid; place-items: center; border-radius: var(--radius); border: 1px solid var(--border-strong); background: transparent; cursor: pointer; color: var(--text); transition: border-color .15s ease, background-color .15s ease; }
+  .icon-btn:hover { background: var(--surface-2); border-color: var(--accent); }
   .theme-ico { width: 16px; height: 16px; border-radius: 50%; background: currentColor; box-shadow: inset -4px -4px 0 0 var(--bg); }
   @media (max-width: 540px) { .brand-name { display: none; } }
 </style>
-
-<script>
-  const btn = document.getElementById('theme-toggle');
-  const root = document.documentElement;
-  const sync = () => btn?.setAttribute('aria-pressed', String(root.dataset.theme === 'dark'));
-  sync();
-  btn?.addEventListener('click', () => {
-    const next = root.dataset.theme === 'dark' ? 'light' : 'dark';
-    root.dataset.theme = next;
-    try { localStorage.setItem('theme', next); } catch (e) {}
-    sync();
-  });
-</script>

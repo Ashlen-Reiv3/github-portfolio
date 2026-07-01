@@ -36,16 +36,11 @@ const btnStyle = (active) => ({
 
 export default function XgChart() {
   const [season, setSeason] = useState(SEASONS[0]);
+  // Hatch styling (incl. dark-mode boost) lives in tokens.css as global rules on
+  // .xg-hatch-bg / .xg-hatch-line — keeping it out of an inline <style> avoids a
+  // server/client text mismatch on the [data-theme="dark"] quotes during hydration.
   return (
     <div>
-      {/* Expected (hatched) vs actual (solid) can wash together in dark mode — boost the
-          hatch fill + line weight there so the two series stay distinct. */}
-      <style>{`
-        .xg-hatch-bg { fill: var(--series-3); fill-opacity: 0.16; }
-        .xg-hatch-line { stroke: var(--series-3); stroke-width: 3; }
-        [data-theme="dark"] .xg-hatch-bg { fill-opacity: 0.36; }
-        [data-theme="dark"] .xg-hatch-line { stroke-width: 3.6; }
-      `}</style>
       <div role="group" aria-label="Season" style={{ display: 'flex', gap: 6, marginBottom: 12 }}>
         {SEASONS.map((s) => (
           <button key={s} type="button" onClick={() => setSeason(s)} aria-pressed={s === season} style={btnStyle(s === season)}>{s}</button>

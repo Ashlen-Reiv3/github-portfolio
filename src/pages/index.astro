@@ -1,14 +1,18 @@
 ---
 import Base from '../layouts/Base.astro';
+import StatCard from '../components/StatCard.astro';
+import { Image } from 'astro:assets';
+import { withBase } from '../lib/url';
+import ashlen from '../assets/ashlen.jpg';
 
 const proof = ['Kaggle', 'DataCamp', 'LeetCode'];
 
 const projects = [
-  { title: 'Football Analytica', cat: 'data-eng analysis viz', tags: ['Postgres', 'FastAPI', 'Next.js', 'Recharts'], href: '/work/football-analytica', badge: 'In development', blurb: 'Premier League analytics platform — open data sourced, modelled, and visualised end to end.' },
-  { title: 'Credit-card spend tracker', cat: 'data-eng analysis viz', tags: ['Python', 'SQL', 'Chart.js'], href: '/work/credit-card-tracker', badge: 'Anonymised', blurb: 'Bank statements to an interactive spending dashboard — the full pipeline.' },
-  { title: 'Titanic — exploratory analysis', cat: 'analysis', tags: ['Python', 'pandas'], href: 'https://www.kaggle.com/code/ashlenmammen/titanic-dataset-eda', external: true, blurb: 'EDA notebook on the classic Kaggle dataset.' },
-  { title: 'Titanic — ML model', cat: 'data-science', tags: ['scikit-learn'], href: 'https://www.kaggle.com/code/ashlenmammen/titanic-dataset-ml', external: true, blurb: 'Survival prediction with scikit-learn.' },
-  { title: 'LeetCode Top 50 SQL', cat: 'data-eng', tags: ['SQL'], href: 'https://leetcode.com/ashlenmammen/', external: true, blurb: 'Query practice — joins, window functions, aggregation.' },
+  { title: 'Football Analytica', cat: 'data-eng analysis viz', tags: ['Postgres', 'FastAPI', 'Next.js', 'Recharts'], href: '/work/football-analytica', badge: 'In development', featured: true, blurb: 'Open Premier League data → a SQL star-schema warehouse → an xG model and visuals. One project, the whole pipeline.' },
+  { title: 'Credit-card spend tracker', cat: 'data-eng analysis viz', tags: ['Python', 'SQL', 'Chart.js'], href: '/work/credit-card-tracker', badge: 'Anonymised', blurb: 'Emailed bank statements → SQLite → an interactive spending dashboard.' },
+  { title: 'Titanic: exploratory analysis', cat: 'analysis', tags: ['Python', 'pandas'], href: 'https://www.kaggle.com/code/ashlenmammen/titanic-dataset-eda', external: true, blurb: 'An EDA notebook on the classic Kaggle dataset.' },
+  { title: 'Titanic: ML model', cat: 'data-science', tags: ['scikit-learn'], href: 'https://www.kaggle.com/code/ashlenmammen/titanic-dataset-ml', external: true, blurb: 'Survival prediction with scikit-learn.' },
+  { title: 'LeetCode Top 50 SQL', cat: 'data-eng', tags: ['SQL'], href: 'https://leetcode.com/ashlenmammen/', external: true, blurb: 'Joins, window functions, and aggregation. Query craft.' },
 ];
 
 const filters = [
@@ -23,70 +27,90 @@ const skills = [
   { group: 'Engineering & SQL', items: ['SQL', 'PostgreSQL', 'SQLite', 'ETL', 'Star schema', 'Supabase'] },
   { group: 'Analysis & ML', items: ['Python', 'pandas', 'scikit-learn', 'TensorFlow'] },
   { group: 'Visualisation & BI', items: ['Recharts', 'D3', 'Chart.js', 'Tableau', 'Power BI'] },
+  { group: 'AI & agentic workflows', items: ['Claude Code', 'CLI', 'Cowork', 'MCP servers', 'Skills', 'Hooks'] },
   { group: 'Tools & platforms', items: ['FastAPI', 'Next.js', 'Docker', 'Git', 'Kaggle', 'LeetCode'] },
 ];
 
 const certs = [
-  { label: 'DataCamp — Data Analyst', href: 'https://www.datacamp.com/certificate/DA0027776666312' },
-  { label: 'DataCamp — Data Scientist', href: 'https://www.datacamp.com/certificate/DS0026926179575' },
-  { label: 'DataCamp — Data Engineer', href: 'https://www.datacamp.com/certificate/DE0018295930098' },
+  { label: 'DataCamp: Data Analyst', href: 'https://www.datacamp.com/certificate/DA0027776666312' },
+  { label: 'DataCamp: Data Scientist', href: 'https://www.datacamp.com/certificate/DS0026926179575' },
+  { label: 'DataCamp: Data Engineer', href: 'https://www.datacamp.com/certificate/DE0018295930098' },
   { label: 'Kaggle profile', href: 'https://www.kaggle.com/ashlenmammen/Home' },
   { label: 'LeetCode profile', href: 'https://leetcode.com/ashlenmammen/' },
 ];
 
-const pipeline = ['Source', 'SQL / engineer', 'Analyse', 'Visualise'];
+const projUrl = (p) => (p.external ? p.href : withBase(p.href));
+
+const social = [
+  { href: 'https://github.com/Ashlen-Reiv3', label: 'GitHub' },
+  { href: 'https://www.linkedin.com/in/ashlen-mammen-074903141/', label: 'LinkedIn' },
+];
 ---
 
-<Base>
-  <section class="section hero">
-    <div class="container">
-      <p class="eyebrow">Data analyst</p>
-      <h1>Making sense of the world,<br />one dataset at a time.</h1>
-      <p class="lead hero-lead">I turn messy data into clear decisions — analytics, data engineering, and visualisation, with a soft spot for sustainability and fintech.</p>
-      <div class="hero-cta">
-        <a class="btn btn-primary" href="#work">View work</a>
-        <a class="btn" href="/cv.pdf">Download CV</a>
-      </div>
-      <ul class="proof" aria-label="Profiles">
-        {proof.map((p) => <li class="tag">{p}</li>)}
-      </ul>
-    </div>
-  </section>
-
-  <section class="section featured-wrap">
-    <div class="container">
-      <article class="featured card">
-        <span class="badge">★ Featured · In development</span>
-        <h2>Football Analytica</h2>
-        <p class="muted">A Premier League analytics platform — open data sourced and modelled in a SQL star-schema, served through an API, and visualised in a modern web app. One project, the full pipeline.</p>
-        <ul class="pipeline" aria-label="Pipeline stages">
-          {pipeline.map((s, i) => (
-            <li><span class="pl-step">{i + 1}</span>{s}</li>
+<Base ogSlug="home">
+  <section class="section hero graph-grid">
+    <div class="container hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow"><span class="num">›</span> Data analyst · BI · data engineering · data science · AI</p>
+        <h1 class="hero-h1">I turn raw data into <em>decisions</em><span class="dot">.</span></h1>
+        <p class="lead hero-lead">I'm a data and BI analyst, and I like owning the whole pipeline: sourcing, SQL, analysis, and the chart people actually use. I'm especially interested in where data meets sustainability and fintech.</p>
+        <div class="hero-cta">
+          <a class="btn btn-primary" href="#work">View work <span aria-hidden="true">→</span></a>
+          <a class="btn" href="#contact">Get in touch</a>
+        </div>
+        <ul class="hero-social">
+          {social.map((s) => (
+            <li><a href={s.href} target="_blank" rel="noopener">{s.label} <span aria-hidden="true">↗</span></a></li>
           ))}
         </ul>
-        <a class="btn btn-primary" href="/work/football-analytica">Read the case study</a>
-      </article>
+        <p class="cv-note">CV available on request.</p>
+        <div class="proof">
+          <span class="proof-label">Verified on</span>
+          <ul class="proof-list">{proof.map((p) => <li class="tag">{p}</li>)}</ul>
+        </div>
+      </div>
+
+      <div class="hero-photo-wrap">
+        <Image class="hero-photo" src={ashlen} alt="Ashlen Mammen" width={640} height={640} loading="eager" fetchpriority="high" />
+      </div>
     </div>
   </section>
 
   <section id="work" class="section">
     <div class="container">
       <div class="section-head">
-        <div><p class="eyebrow">Work</p><h2>Selected projects</h2></div>
+        <div class="sh-titles">
+          <p class="eyebrow"><span class="num">01</span> Work</p>
+          <h2>Selected projects</h2>
+        </div>
         <div class="filters" role="group" aria-label="Filter projects">
           {filters.map((f, i) => (
             <button class="filter" data-filter={f.id} aria-pressed={i === 0 ? 'true' : 'false'}>{f.label}</button>
           ))}
         </div>
       </div>
-      <div class="grid work-grid">
+
+      <div class="bento">
         {projects.map((p) => (
-          <a class="card project" data-cat={p.cat} href={p.href} {...(p.external ? { target: '_blank', rel: 'noopener' } : {})}>
+          <a
+            class={`card project reveal${p.featured ? ' is-featured' : ''}`}
+            data-cat={p.cat}
+            href={projUrl(p)}
+            {...(p.external ? { target: '_blank', rel: 'noopener' } : {})}
+          >
             <div class="project-top">
-              <h3>{p.title}</h3>
-              {p.badge && <span class="badge">{p.badge}</span>}
+              <h3>{p.title}{p.external && <span class="ext" aria-hidden="true"> ↗</span>}</h3>
+              {p.badge && <span class={p.badge === 'Anonymised' ? 'badge badge-signal' : 'badge'}>{p.badge}</span>}
             </div>
-            <p class="muted">{p.blurb}</p>
+            <p class="muted project-blurb">{p.blurb}</p>
+            {p.featured && (
+              <div class="feat-extra">
+                <StatCard value="+7" label="Arsenal: goals over xG, 24/25" spark={[7, -4, 3, -3, 7, -3]} lineage={['source', 'SQL', 'viz']} />
+                <ol class="mini-pipe" aria-label="Pipeline">
+                  <li>Source</li><li>SQL</li><li>Analyse</li><li>Visualise</li>
+                </ol>
+              </div>
+            )}
             <ul class="tags">{p.tags.map((t) => <li class="tag">{t}</li>)}</ul>
           </a>
         ))}
@@ -96,10 +120,10 @@ const pipeline = ['Source', 'SQL / engineer', 'Analyse', 'Visualise'];
 
   <section class="section surface-section">
     <div class="container">
-      <div class="section-head"><div><p class="eyebrow">Skills</p><h2>What I work with</h2></div></div>
+      <div class="section-head"><div class="sh-titles"><p class="eyebrow"><span class="num">02</span> Skills</p><h2>What I work with</h2></div></div>
       <div class="grid skills-grid">
         {skills.map((s) => (
-          <div class="card">
+          <div class="card reveal">
             <h3 class="skill-h">{s.group}</h3>
             <ul class="tags">{s.items.map((i) => <li class="tag">{i}</li>)}</ul>
           </div>
@@ -108,89 +132,124 @@ const pipeline = ['Source', 'SQL / engineer', 'Analyse', 'Visualise'];
     </div>
   </section>
 
-  <section id="about" class="section">
-    <div class="container about">
-      <div>
-        <p class="eyebrow">About</p>
-        <h2>Hi, I'm Ashlen.</h2>
-        <p class="muted">I'm a data professional focused on analytics and business intelligence — turning data into decisions across the whole pipeline, from sourcing and SQL to analysis and visualisation. I'm especially drawn to the intersection of data, sustainability, and fintech.</p>
-      </div>
-      <img class="about-photo" src="/ashlen.jpg" alt="Ashlen Mammen" width="640" height="640" loading="lazy" />
-    </div>
-  </section>
-
   <section class="section surface-section">
     <div class="container">
-      <div class="section-head"><div><p class="eyebrow">Credentials</p><h2>Certifications & profiles</h2></div></div>
+      <div class="section-head"><div class="sh-titles"><p class="eyebrow"><span class="num">03</span> Credentials</p><h2>Certifications & profiles</h2></div></div>
       <ul class="grid cred-grid">
         {certs.map((c) => (
-          <li><a class="card cred" href={c.href} target="_blank" rel="noopener">{c.label}<span aria-hidden="true">↗</span></a></li>
+          <li><a class="card cred reveal" href={c.href} target="_blank" rel="noopener">{c.label}<span aria-hidden="true">↗</span></a></li>
         ))}
       </ul>
     </div>
   </section>
 
   <section id="contact" class="section">
-    <div class="container contact">
-      <p class="eyebrow">Contact</p>
+    <div class="container contact reveal">
+      <p class="eyebrow"><span class="num">04</span> Contact</p>
       <h2>Let's talk data.</h2>
-      <p class="lead">Open to data analyst, BI, and data engineering roles and collaborations.</p>
+      <p class="lead">Open to roles across data and AI: data analyst, BI, data engineering, and data science. Always happy to talk through a good project or a collaboration.</p>
       <div class="hero-cta">
         <a class="btn btn-primary" href="mailto:ashlenmammen+portfolio@gmail.com">Email me</a>
         <a class="btn" href="https://www.linkedin.com/in/ashlen-mammen-074903141/" target="_blank" rel="noopener">LinkedIn</a>
       </div>
+      <p class="cv-note">CV available on request.</p>
     </div>
   </section>
 </Base>
 
 <style>
-  .hero { padding-block: var(--sp-7) var(--sp-6); }
-  .hero h1 { margin-block: var(--sp-2) var(--sp-3); }
-  .hero-lead { max-width: 60ch; }
+  /* ---------- hero ---------- */
+  .hero { --grid-size: 28px; padding-block: var(--sp-7) var(--sp-6); border-bottom: 1px solid var(--border); position: relative; }
+  .hero::after { content: ''; position: absolute; inset: 0; background: linear-gradient(to bottom, transparent 55%, var(--bg)); pointer-events: none; }
+  .hero-inner { display: grid; grid-template-columns: 1.08fr 0.92fr; gap: var(--sp-6); align-items: center; position: relative; z-index: 1; }
+  .eyebrow .num { color: var(--signal); font-weight: 600; }
+  .hero-h1 { font-size: var(--step-5); font-weight: 600; margin-block: var(--sp-3) var(--sp-3); }
+  .hero-h1 em { font-style: italic; color: var(--accent); }
+  .hero-h1 .dot { color: var(--signal); }
+  .hero-lead { max-width: 46ch; }
   .hero-cta { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-4); }
-  .proof { display: flex; gap: var(--sp-2); flex-wrap: wrap; margin-top: var(--sp-5); }
+  .cv-note { font-family: var(--font-mono); font-size: var(--step--1); color: var(--faint); margin-top: var(--sp-2); }
+  .proof { display: flex; align-items: center; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-5); }
+  .proof-label { font-family: var(--font-mono); font-size: var(--step--1); color: var(--faint); letter-spacing: .04em; }
+  .proof-list { display: flex; gap: var(--sp-2); flex-wrap: wrap; }
 
-  .featured { display: flex; flex-direction: column; align-items: flex-start; gap: var(--sp-2); border-color: var(--border-strong); }
-  .featured h2 { margin-top: var(--sp-1); }
-  .pipeline { display: flex; flex-wrap: wrap; gap: var(--sp-2); margin-block: var(--sp-2) var(--sp-3); }
-  .pipeline li { display: inline-flex; align-items: center; gap: 8px; font-size: var(--step--1); color: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 5px 12px; }
-  .pl-step { display: grid; place-items: center; width: 18px; height: 18px; border-radius: 50%; background: var(--accent); color: var(--accent-contrast); font-size: 11px; font-weight: 700; }
+  .hero-social { display: flex; gap: var(--sp-3); flex-wrap: wrap; margin-top: var(--sp-4); }
+  .hero-social a { font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted); text-decoration: none; transition: color .15s ease; }
+  .hero-social a:hover { color: var(--accent); }
 
-  .filters { display: flex; gap: 6px; flex-wrap: wrap; }
-  .filter { font: inherit; font-size: var(--step--1); padding: 6px 12px; border-radius: var(--radius-pill); border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; }
-  .filter[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
+  .hero-photo-wrap { position: relative; width: 100%; max-width: 440px; margin-inline: auto; }
+  .hero-photo { width: 100%; height: auto; aspect-ratio: 1; object-fit: cover; border-radius: var(--radius-lg); border: 1px solid var(--border); box-shadow: var(--shadow); }
 
-  .work-grid { grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); }
-  .project { text-decoration: none; display: flex; flex-direction: column; gap: var(--sp-2); }
+  /* ---------- section heads ---------- */
+  .sh-titles h2 { margin-top: 6px; }
+
+  /* ---------- bento work grid ---------- */
+  .bento { display: grid; grid-template-columns: repeat(6, 1fr); gap: var(--sp-3); }
+  .project { text-decoration: none; display: flex; flex-direction: column; gap: var(--sp-2); grid-column: span 2; }
+  .project.is-featured { grid-column: span 4; border-color: var(--accent); }
+  .project[hidden] { display: none; } /* beat .project{display:flex} so filtering hides cards */
   .project-top { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--sp-2); }
-  .project h3 { font-size: var(--step-0); }
+  .project h3 { font-size: var(--step-1); }
+  .is-featured .project h3 { font-size: var(--step-2); }
+  .ext { color: var(--accent); font-size: 0.7em; }
+  .project-blurb { font-size: var(--step--1); }
+  .is-featured .project-blurb { font-size: var(--step-0); max-width: 48ch; }
+  .feat-extra { display: flex; align-items: center; gap: var(--sp-4); flex-wrap: wrap; margin-block: var(--sp-2); }
+  .feat-extra :global(.statcard) { display: flex; min-width: 220px; }
+  .mini-pipe { list-style: none; display: flex; align-items: center; flex-wrap: wrap; gap: 22px; }
+  .mini-pipe li { position: relative; font-family: var(--font-mono); font-size: 10.5px; color: var(--muted); border: 1px solid var(--border); border-radius: var(--radius-pill); padding: 3px 10px; white-space: nowrap; }
+  /* arrow sits centred in the flex gap (outside the pill), not jammed inside it */
+  .mini-pipe li:not(:last-child)::after { content: '→'; color: var(--signal); position: absolute; left: calc(100% + 11px); top: 50%; transform: translate(-50%, -50%); pointer-events: none; }
   .tags { display: flex; flex-wrap: wrap; gap: 6px; margin-top: auto; padding-top: var(--sp-1); }
 
-  .surface-section { background: var(--surface); border-block: 1px solid var(--border); }
-  .skills-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-  .skill-h { font-size: var(--step-0); margin-bottom: var(--sp-2); }
+  .filters { display: flex; gap: 6px; flex-wrap: wrap; }
+  .filter { font-family: var(--font-mono); font-size: var(--step--1); padding: 6px 12px; border-radius: var(--radius-pill); border: 1px solid var(--border); background: transparent; color: var(--muted); cursor: pointer; transition: color .15s ease, border-color .15s ease; }
+  .filter:hover { border-color: var(--accent); color: var(--accent); }
+  .filter[aria-pressed='true'] { background: var(--accent); border-color: var(--accent); color: var(--accent-contrast); }
 
-  .about { display: grid; grid-template-columns: 1.6fr 1fr; gap: var(--sp-5); align-items: center; }
-  .about-photo { aspect-ratio: 1; width: 100%; object-fit: cover; border-radius: var(--radius-lg); border: 1px solid var(--border); }
-  @media (max-width: 720px) { .about { grid-template-columns: 1fr; } .about-photo { max-width: 220px; } }
+  /* ---------- skills / about / creds / contact ---------- */
+  .surface-section { background: var(--surface-2); border-block: 1px solid var(--border); }
+  .skills-grid { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
+  .skill-h { font-family: var(--font-mono); font-size: var(--step--1); letter-spacing: .04em; text-transform: uppercase; color: var(--accent); margin-bottom: var(--sp-2); }
 
   .cred-grid { grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
-  .cred { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); text-decoration: none; }
+  .cred { display: flex; align-items: center; justify-content: space-between; gap: var(--sp-2); text-decoration: none; font-weight: 500; }
   .contact { text-align: center; max-width: 60ch; margin-inline: auto; }
   .contact .hero-cta { justify-content: center; }
+
+  /* ---------- responsive ---------- */
+  @media (max-width: 900px) {
+    .hero-inner { grid-template-columns: 1fr; }
+    .hero-copy { order: 2; }
+    .hero-photo-wrap { order: 1; max-width: 320px; }
+    .bento { grid-template-columns: repeat(4, 1fr); }
+    .project { grid-column: span 2; }
+    .project.is-featured { grid-column: span 4; }
+  }
+  @media (max-width: 560px) {
+    .bento { grid-template-columns: 1fr; }
+    .project, .project.is-featured { grid-column: span 1; }
+    .hero-photo-wrap { max-width: 260px; }
+  }
 </style>
 
 <script>
-  const buttons = document.querySelectorAll<HTMLButtonElement>('.filter');
-  const cards = document.querySelectorAll<HTMLElement>('.project');
-  buttons.forEach((btn) => {
-    btn.addEventListener('click', () => {
+  // Project filter — delegated once so it survives View Transitions.
+  (() => {
+    const W = window as any;
+    if (W.__filtersInit) return;
+    W.__filtersInit = true;
+    document.addEventListener('click', (e) => {
+      const btn = (e.target as HTMLElement)?.closest('.filter') as HTMLButtonElement | null;
+      if (!btn) return;
+      const group = btn.closest('.filters');
+      if (!group) return;
       const f = btn.getAttribute('data-filter');
-      buttons.forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
-      cards.forEach((c) => {
+      group.querySelectorAll('.filter').forEach((b) => b.setAttribute('aria-pressed', String(b === btn)));
+      document.querySelectorAll<HTMLElement>('.project').forEach((c) => {
         const cats = (c.getAttribute('data-cat') || '').split(' ');
-        c.hidden = f === 'all' || cats.includes(f as string) ? false : true;
+        c.hidden = !(f === 'all' || cats.includes(f as string));
       });
     });
-  });
+  })();
 </script>
