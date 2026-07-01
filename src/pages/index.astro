@@ -155,6 +155,13 @@ const social = [
       <p class="cv-note">CV available on request.</p>
     </div>
   </section>
+
+  <aside class="view-counter" id="view-counter" hidden aria-label="Total page views">
+    <svg viewBox="0 0 24 24" width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+      <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" /><circle cx="12" cy="12" r="3" />
+    </svg>
+    <span><span id="vc-num" class="tnum">—</span> views</span>
+  </aside>
 </Base>
 
 <style>
@@ -231,6 +238,21 @@ const social = [
     .project, .project.is-featured { grid-column: span 1; }
     .hero-photo-wrap { max-width: 260px; }
   }
+
+  /* floating view counter (home only) */
+  .view-counter {
+    position: fixed; right: var(--sp-3); bottom: var(--sp-3); z-index: 40;
+    display: inline-flex; align-items: center; gap: 7px;
+    font-family: var(--font-mono); font-size: var(--step--1); color: var(--muted);
+    background: color-mix(in srgb, var(--surface) 86%, transparent);
+    border: 1px solid var(--border); border-radius: var(--radius-pill);
+    padding: 6px 12px; box-shadow: var(--shadow); backdrop-filter: saturate(140%) blur(8px);
+  }
+  .view-counter svg { color: var(--accent); flex: none; }
+  .view-counter #vc-num { color: var(--text); font-weight: 600; }
+  @media (max-width: 560px) {
+    .view-counter { right: var(--sp-2); bottom: var(--sp-2); font-size: 11px; padding: 5px 10px; }
+  }
 </style>
 
 <script>
@@ -251,5 +273,45 @@ const social = [
         c.hidden = !(f === 'all' || cats.includes(f as string));
       });
     });
+  })();
+</script>
+
+<script>
+  // Floating view counter (home only), backed by Supabase via two SECURITY DEFINER
+  // RPCs (increment_view / get_view). Config comes from PUBLIC_ env vars, baked at
+  // build (the anon key is public by design). Counts once per browser session and
+  // reads on repeat; dev/local hits a separate slug so the real count stays clean.
+  // Stays hidden if unconfigured or unreachable.
+  (() => {
+    const W = window as any;
+    if (W.__vcInit) return;
+    W.__vcInit = true;
+    const SUPA_URL = import.meta.env.PUBLIC_SUPABASE_URL;
+    const SUPA_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
+    const local = /^(localhost$|127\.|0\.0\.0\.0$)/.test(location.hostname);
+    const SLUG = local ? 'home-dev' : 'home';
+    const run = async () => {
+      const el = document.getElementById('view-counter');
+      const num = document.getElementById('vc-num');
+      if (!el || !num) return;            // only on the home page
+      if (!SUPA_URL || !SUPA_KEY) return; // not configured yet -> stay hidden
+      try {
+        const counted = sessionStorage.getItem('vc-counted');
+        const fn = counted ? 'get_view' : 'increment_view';
+        const res = await fetch(`${SUPA_URL}/rest/v1/rpc/${fn}`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', apikey: SUPA_KEY, Authorization: `Bearer ${SUPA_KEY}` },
+          body: JSON.stringify({ page_slug: SLUG }),
+        });
+        if (!res.ok) throw new Error('counter unavailable');
+        const value = await res.json(); // PostgREST returns the scalar bigint
+        num.textContent = Number(value).toLocaleString('en-US');
+        sessionStorage.setItem('vc-counted', '1');
+        el.hidden = false;
+      } catch (_) {
+        el.hidden = true;
+      }
+    };
+    document.addEventListener('astro:page-load', run);
   })();
 </script>

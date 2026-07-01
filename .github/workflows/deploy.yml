@@ -22,6 +22,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: withastro/action@v3
+        env:
+          # Public Supabase config for the home-page view counter. These are
+          # repository *Variables* (Settings > Secrets and variables > Actions >
+          # Variables). The anon/publishable key is public by design.
+          PUBLIC_SUPABASE_URL: ${{ vars.PUBLIC_SUPABASE_URL }}
+          PUBLIC_SUPABASE_ANON_KEY: ${{ vars.PUBLIC_SUPABASE_ANON_KEY }}
   deploy:
     needs: build
     runs-on: ubuntu-latest
