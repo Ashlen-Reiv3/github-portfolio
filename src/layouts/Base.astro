@@ -97,6 +97,17 @@ const schemas = [person, ...(schema ? (Array.isArray(schema) ? schema : [schema]
           document.querySelectorAll('#theme-toggle').forEach((b) => b.setAttribute('aria-pressed', String(next === 'dark')));
         });
 
+        // View Transitions swap the document and reset <html> attributes, dropping
+        // data-theme. Re-apply the saved theme on every swap (before paint) so dark/
+        // light mode persists across navigation with no flash.
+        document.addEventListener('astro:after-swap', () => {
+          try {
+            const t = localStorage.getItem('theme') ||
+              (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+            document.documentElement.dataset.theme = t;
+          } catch (_) {}
+        });
+
         const reveal = () => {
           const nodes = document.querySelectorAll<HTMLElement>('.reveal:not(.is-visible)');
           if (!window.matchMedia('(prefers-reduced-motion: no-preference)').matches) {
