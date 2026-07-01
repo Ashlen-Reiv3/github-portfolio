@@ -1,0 +1,77 @@
+---
+import CaseStudy from '../../layouts/CaseStudy.astro';
+import ChartFigure from '../../components/ChartFigure.astro';
+import SpendChart from '../../components/charts/SpendChart.jsx';
+
+const spendSql = `-- monthly spend by category from the normalised ledger
+SELECT  strftime('%Y-%m', txn_date) AS month,
+        category,
+        SUM(amount_local)           AS spend
+FROM    transactions
+WHERE   direction = 'debit'
+GROUP BY month, category
+ORDER BY month, spend DESC;`;
+
+const spendRows = [
+  ['Jan', 420, 180, 90, 140, 830],
+  ['Feb', 460, 150, 110, 90, 810],
+  ['Mar', 390, 220, 100, 175, 885],
+  ['Apr', 510, 160, 95, 120, 885],
+  ['May', 440, 240, 130, 160, 970],
+  ['Jun', 480, 200, 105, 210, 995],
+];
+---
+
+<CaseStudy
+  title="Credit-card spend tracker"
+  category="Data engineering · Analysis · Visualisation"
+  status="Anonymised"
+  summary="An end-to-end pipeline that turns raw multi-bank card statements into an interactive spending dashboard, covering sourcing, SQL modelling, analysis and visualisation."
+  role="Sole builder"
+  year="2026"
+  stack={['Python', 'SQLite', 'SQL', 'Chart.js', 'Gmail API']}
+  ogSlug="credit-card-tracker"
+  problem="A household with cards across several banks couldn't see where the money actually went. Statements arrived each month as scattered email attachments, all in different formats. How do you turn that mess into a trustworthy, repeatable monthly view of spending?"
+  heroStat={{ value: 'R 895', label: 'avg monthly spend (synthetic)', spark: [830, 810, 885, 885, 970, 995], lineage: ['source', 'SQL', 'analysis', 'viz'] }}
+  links={[]}
+>
+  <p class="note">I built this on my own family's finances, so every figure here is <strong>synthetic</strong>. No real account numbers, balances, merchants or personal data appear. It shows the method and the dashboard, never the statements.</p>
+
+  <section class="stage" id="source">
+    <h2>Source: the data</h2>
+    <p>Statements arrive by email from several banks. A small Python ingester (Gmail API) pulls the monthly attachments into a raw store automatically, so there's no manual downloading and the intake stays repeatable and auditable.</p>
+  </section>
+
+  <section class="stage" id="engineer">
+    <h2>Engineer: the SQL model</h2>
+    <p>Transactions are parsed and normalised into a SQLite <strong>single source of truth</strong>: a typed schema for cards, statements and transactions (date, merchant, category, direction, local and foreign amount, currency). An idempotent sync rebuilds the dashboard data from the database, so a re-run with no changes is a no-op.</p>
+    <pre><code>{spendSql}</code></pre>
+    <p>Roughly 750 transactions across two cards, multi-currency, are categorised and rolled up by this query.</p>
+  </section>
+
+  <section class="stage" id="analyse">
+    <h2>Analyse: the question</h2>
+    <p>With clean data, the questions are easy: where money goes by category and month, how spend compares to repayments, and which months break trend.</p>
+    <div class="insight">
+      <span class="k">Key insight</span>
+      <p>Online spend climbed from R 90 in February to R 210 in June, the only category trending up, while groceries stayed the anchor at roughly half of every month.</p>
+    </div>
+  </section>
+
+  <section class="stage" id="visualise">
+    <h2>Visualise: the answer</h2>
+    <div class="viz">
+      <ChartFigure
+        summary="Groceries anchor every month (about R 390 to R 510), and online spend more than doubled from February to June, the clearest upward trend."
+        context="Six months of anonymised card spend, rolled up into four categories from the transaction ledger."
+        caption="A synthetic sample. Toggle a category to focus it."
+        note="full values in the table"
+        columns={['Month', 'Groceries', 'Dining', 'Transport', 'Online', 'Total']}
+        rows={spendRows}
+      >
+        <SpendChart client:load />
+      </ChartFigure>
+    </div>
+    <p><strong>Impact and artefacts:</strong> the real dashboard is a themed Chart.js front-end with a documented v1 to v2 redesign that added a unified design system, WCAG-AA contrast, tabular numerals, focus-visible states and reduced-motion support.</p>
+  </section>
+</CaseStudy>

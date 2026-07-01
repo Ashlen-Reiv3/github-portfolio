@@ -1,0 +1,22 @@
+name: Lighthouse CI
+
+on:
+  pull_request:
+  push:
+    branches: [main, revamp-2026]
+  workflow_dispatch:
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+      - run: npm ci
+      - name: Build (no base, for local serving)
+        run: LHCI=1 npm run build
+      - name: Run Lighthouse CI
+        run: npx lhci autorun
